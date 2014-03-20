@@ -6,7 +6,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cxf.weixin.message.resp.TextMessage;
+import org.cxf.weixin.util.HelpUtil;
 import org.cxf.weixin.util.MessageUtil;
+import org.cxf.weixin.util.QQFaceUtil;
 
 public class CoreService {
 
@@ -37,11 +39,22 @@ public class CoreService {
   
             // 文本消息  
             if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {  
-                respContent = "您发送的是文本消息！";  
+            	String contentString = requestMap.get("Content");
+                if (contentString.equals("?") || contentString.equals("？")) {
+					respContent = HelpUtil.getMainMenu();
+				}
+                else {
+                	respContent = QQFaceUtil.multiQQFace(contentString);
+//                    respContent = "您发送的是text消息！";  
+//                	  respContent = "<a href=\"www.baidu.com\">您发送的是text消息，点击查看更多。</a>";
+				}
+//            	respContent = requestMap.get("Content")  +
+//            			requestMap.get("Content").length() + ";" + requestMap.get("Content").compareTo("?");
             }  
             // 图片消息  
             else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_IMAGE)) {  
                 respContent = "您发送的是图片消息！";  
+
             }  
             // 地理位置消息  
             else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_LOCATION)) {  
@@ -72,6 +85,12 @@ public class CoreService {
                 else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {  
                     // TODO 自定义菜单权没有开放，暂不处理该类消息  
                 }  
+                else if (eventType.equals(MessageUtil.EVENT_TYPE_LOCATION)) {
+					respContent = "您发送的是您当前地理位置。";
+				}
+                else if (eventType.equals(MessageUtil.EVENT_TYPE_VIEW)) {
+					respContent = "";
+				}
             }  
   
             textMessage.setContent(respContent);  
